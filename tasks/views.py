@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import permissions
 from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter
 
 from .models import Task, Tag
 from .serializer import UserSerializer, TaskSerializer, TagSerializer
@@ -17,6 +18,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permissions_classes = [permissions.IsAuthenticatedOrReadOnly,
                             IsOwnerOrReadonly]
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['tags', 'creation_date', 'finish_date', 'status']                            
     
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
