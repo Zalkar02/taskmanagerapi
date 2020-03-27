@@ -2,13 +2,20 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Task, Tag
 
-class UserSerializer(serializers.ModelSerializer):
-    tasks = serializers.PrimaryKeyRelatedField(many=True, queryset=Task.objects.all())
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
-
+class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'tasks', 'tags']
+        fields = ['email', 'username', 'password']
+        extra_kwargs = {'password': {'write_only': True}, 'email': {'write_only' : True}}
+
+    def create(self, validated_data):
+        user = User(
+            email=validated_data['email'],
+            username=validated_data['username']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -16,7 +23,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'status',
+        fields = ['url', 'title', 'description', 'status',
         'creation_date', 'finish_date', 'tags', 'owner']
 
 
@@ -25,4 +32,4 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ['id', 'title', 'date', 'tasks', 'owner']
+        fields = ['url', 'title', 'date', 'tasks', 'owner']

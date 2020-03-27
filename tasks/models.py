@@ -8,6 +8,9 @@ class Task(models.Model):
     finish_date = models.DateTimeField()
     owner = models.ForeignKey('auth.User', related_name='tasks', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+
 
 class Tag(models.Model):
     title = models.CharField(max_length=255)
@@ -15,3 +18,5 @@ class Tag(models.Model):
     tasks = models.ManyToManyField(Task, related_name='tags')
     owner = models.ForeignKey('auth.User', related_name='tags', on_delete=models.CASCADE)
     
+    def __str__(self):
+        return self.title
